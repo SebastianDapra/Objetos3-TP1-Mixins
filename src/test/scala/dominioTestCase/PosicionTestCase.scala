@@ -1,6 +1,6 @@
 package dominioTestCase
 
-import dominio._
+import elementosDelTerreno._
 import org.scalatest._
 
 /**

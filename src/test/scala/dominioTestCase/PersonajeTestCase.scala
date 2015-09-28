@@ -1,21 +1,33 @@
 package dominioTestCase
 
-import dominio._
+
+import excepciones._
 import org.scalatest._
+import herramientas._
+import elementosDelTerreno._
+import scala.collection.mutable.ArrayBuffer
+import personajes.Personaje
+import elementosDelTerreno.BayaNegra
+import elementosDelTerreno.BayaMorada
 
 /**
  * @author sebastian
  */
-class PersonajeTestCase extends FlatSpec {
+class PersonajeTestCase extends FlatSpec with BeforeAndAfter{
 
     var terreno = new Terreno()
-    var beto = new Personaje(new Posicion(0,0), terreno)
+    var beto = new Personaje(new Posicion(0,0), terreno, 100)
     var bayaNegra = new BayaNegra(new Posicion(10,10), 50, terreno)
     var bayaMorada = new BayaMorada(new Posicion(101,101), 20, terreno)
-    var arbolito = new Arbol(new Posicion(100,100), terreno)
-    var arbol = new Arbol(new Posicion(201,201), terreno)
+    var arbolito = new ArbolChico(new Posicion(100,100), terreno)
+    var arbol = new ArbolGrande(new Posicion(201,201), terreno)
     var casaDeChanchoCopado = new CasaDeChancho(new Posicion(1,1), new EstadoChanchoBuenHumor, terreno)
     var casaDeChanchoEnojado = new CasaDeChancho(new Posicion(20,20), new EstadoChanchoMalHumor, terreno)
+    
+    before{}
+    after{
+      beto.vaciarInventario
+    }
   
   "un personaje  " should "inspeccionar el terreno" in{
      assert(beto.inspeccionarTerreno(14).length == 2)
@@ -38,8 +50,7 @@ class PersonajeTestCase extends FlatSpec {
    "un personaje  " should "reconocer la casa de chancho mejor provisionado" in{
      casaDeChanchoCopado.agregrarElementoAStock(bayaMorada)
      casaDeChanchoEnojado.agregrarElementoAStock(bayaNegra)
-     beto.reconocerCasaDeChanchoMejorProvisionada()
-     assert(true)//comparar casas???
+     assert(beto.reconocerCasaDeChanchoMejorProvisionada() == casaDeChanchoCopado)
   }
    
    "un personaje  " should "agregar un elemento a su inventario" in{
@@ -48,19 +59,22 @@ class PersonajeTestCase extends FlatSpec {
   }
    
    "un personaje  " should "perder salud" in{
-     beto.restarSalud(100)
-     assert(beto.salud == 900)
+     beto.restarSalud(10)
+     assert(beto.salud == 90)
   }
    
    "un personaje  " should "crear una hoguera" in{
+     beto.inventario = new ArrayBuffer[ElementoDelTerreno]()
      beto.agregarAlInventario(new Piedra(new Posicion(0,0), terreno))
      beto.agregarAlInventario(new Piedra(new Posicion(0,0), terreno))
      beto.agregarAlInventario(new Hierba(new Posicion(0,0), terreno))
      beto.agregarAlInventario(new Hierba(new Posicion(0,0), terreno))
      beto.agregarAlInventario(new Hierba(new Posicion(0,0), terreno))
      beto.crearHoguera
-     assert(beto.inspeccionarTerreno(14).length == 3)
+     assert(beto.inventario.length == 5)
   }
+   
+   
    
   
 }
